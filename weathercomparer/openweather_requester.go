@@ -13,7 +13,7 @@ import (
 type OpenWeather struct{}
 
 //WeatherRequest retrieves weather data from openweathermap.org
-func (provider *OpenWeather) WeatherRequest(country string) WeatherResponse {
+func (provider *OpenWeather) WeatherRequest(country string, city string) WeatherResponse {
 
 	configuration := Configuration{}
 	err := gonfig.GetConf("configuration.json", &configuration)
@@ -21,7 +21,7 @@ func (provider *OpenWeather) WeatherRequest(country string) WeatherResponse {
 		panic(err)
 	}
 
-	resp, err := http.Get("http://api.openweathermap.org/data/2.5/weather?q=ROME,IT&units=imperial&appid=" + configuration.OpenWeatherAPIKey)
+	resp, err := http.Get("http://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country + "&units=imperial&appid=" + configuration.OpenWeatherAPIKey)
 	if err != nil {
 		log.Fatalln(err)
 	}

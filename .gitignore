@@ -11,3 +11,6 @@
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
 configuration.json
+github.com/
+golang.org/
+gopkg.in/

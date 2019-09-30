@@ -10,7 +10,7 @@ func main() {
 		&weathercomparer.WeatherBit{},
 		&weathercomparer.OpenWeather{}}
 	for _, v := range providers {
-		var response = weathercomparer.ProviderRequestor.WeatherRequest(v, "MT")
+		var response = weathercomparer.ProviderRequestor.WeatherRequest(v, "IT", "ROME")
 		fmt.Println(response)
 	}
 

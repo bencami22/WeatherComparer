@@ -13,7 +13,7 @@ import (
 type WeatherBit struct{}
 
 //WeatherRequest retrieves weather data from weatherbit.io
-func (provider *WeatherBit) WeatherRequest(country string) WeatherResponse {
+func (provider *WeatherBit) WeatherRequest(country string, city string) WeatherResponse {
 
 	configuration := Configuration{}
 	err := gonfig.GetConf("configuration.json", &configuration)
@@ -21,7 +21,7 @@ func (provider *WeatherBit) WeatherRequest(country string) WeatherResponse {
 		panic(err)
 	}
 
-	resp, err := http.Get("https://api.weatherbit.io/v2.0/current?city=ROME&country=IT&key=" + configuration.WeatherBitAPIKey)
+	resp, err := http.Get("https://api.weatherbit.io/v2.0/current?city=" + city + "&country=" + country + "&key=" + configuration.WeatherBitAPIKey)
 	//log.Println("https://api.weatherbit.io/v2.0/current?city=ROME&country=IT&key=" + configuration.WeatherBitAPIKey)
 	if err != nil {
 		log.Fatalln(err)
