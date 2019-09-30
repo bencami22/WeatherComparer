@@ -21,7 +21,7 @@ func (provider *OpenWeather) WeatherRequest(country string) WeatherResponse {
 		panic(err)
 	}
 
-	resp, err := http.Get("http://api.openweathermap.org/data/2.5/weather?q=ROME,IT&appid=" + configuration.OpenWeatherAPIKey)
+	resp, err := http.Get("http://api.openweathermap.org/data/2.5/weather?q=ROME,IT&units=imperial&appid=" + configuration.OpenWeatherAPIKey)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -35,8 +35,8 @@ func (provider *OpenWeather) WeatherRequest(country string) WeatherResponse {
 
 	var result map[string]interface{}
 	json.Unmarshal([]byte(body), &result)
-	var temp = result["main"].(map[string]interface{})
-	var finaltemp = temp["temp"].(float64)
-
-	return WeatherResponse{finaltemp}
+	var tempObj = result["main"].(map[string]interface{})
+	var tempinfahrenheight = tempObj["temp"].(float64)
+	var temp = Temperature(tempinfahrenheight)
+	return WeatherResponse{temp.toCelsius()}
 }

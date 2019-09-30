@@ -22,7 +22,7 @@ func (provider *WeatherBit) WeatherRequest(country string) WeatherResponse {
 	}
 
 	resp, err := http.Get("https://api.weatherbit.io/v2.0/current?city=ROME&country=IT&key=" + configuration.WeatherBitAPIKey)
-	log.Println("https://api.weatherbit.io/v2.0/current?city=ROME&country=IT&key=" + configuration.WeatherBitAPIKey)
+	//log.Println("https://api.weatherbit.io/v2.0/current?city=ROME&country=IT&key=" + configuration.WeatherBitAPIKey)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -32,7 +32,7 @@ func (provider *WeatherBit) WeatherRequest(country string) WeatherResponse {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Println(string(body))
+	//log.Println(string(body))
 
 	var result map[string]interface{}
 	json.Unmarshal([]byte(body), &result)
