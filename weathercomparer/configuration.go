@@ -4,4 +4,5 @@ package weathercomparer
 type Configuration struct {
 	WeatherBitAPIKey  string
 	OpenWeatherAPIKey string
+	AccuWeatherAPIKey string
 }
