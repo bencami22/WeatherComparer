@@ -21,7 +21,7 @@ func (provider *AccuWeather) WeatherRequest(country string, city string) Weather
 		panic(err)
 	}
 
-	//first we must get accuweathers 'LocationId'
+	//first we must get accuweathers 'LocationKey'
 	resp, err := http.Get("http://dataservice.accuweather.com/locations/v1/cities/" + country + "/search?apikey=" + configuration.AccuWeatherAPIKey + "&q=" + city)
 	if err != nil {
 		log.Fatalln(err)
@@ -32,12 +32,31 @@ func (provider *AccuWeather) WeatherRequest(country string, city string) Weather
 	if err != nil {
 		log.Fatalln(err)
 	}
-	log.Println(string(body))
+	//log.Println(string(body))
 
 	var result []interface{}
 	json.Unmarshal([]byte(body), &result)
-	var tempObj = result[0]
-	log.Println(tempObj)
+	locationObj := result[0].(map[string]interface{})
+	locationKey := locationObj["Key"].(string)
 
-	return WeatherResponse{100}
+	resp, err = http.Get("http://dataservice.accuweather.com/currentconditions/v1/" + locationKey + "?apikey=" + configuration.AccuWeatherAPIKey)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer resp.Body.Close()
+
+	body, err = ioutil.ReadAll(resp.Body)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	//log.Println(string(body))
+
+	json.Unmarshal([]byte(body), &result)
+	tempObj := result[0].(map[string]interface{})
+	t := tempObj["Temperature"].(map[string]interface{})
+	metricTemperature := t["Metric"].(map[string]interface{})
+	temperature := metricTemperature["Value"].(float64)
+
+	return WeatherResponse{temperature}
 }
