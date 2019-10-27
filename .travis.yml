@@ -1,0 +1,6 @@
+language: go
+
+go:
+- master
+
+go_import_path: https://github.com/bencami22/WeatherComparer/
