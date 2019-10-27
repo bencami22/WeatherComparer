@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"weathercomparer"
+	"github.com/bencami22/weathercomparer/weathercomparer"
 )
 
 func main() {
