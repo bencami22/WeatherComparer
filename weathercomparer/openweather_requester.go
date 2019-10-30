@@ -5,23 +5,17 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-
-	"github.com/tkanos/gonfig"
 )
 
 //OpenWeather contains integration implementation to openweathermap.org
-type OpenWeather struct{}
+type OpenWeather struct {
+	Configuration WebAPIConfigs
+}
 
 //WeatherRequest retrieves weather data from openweathermap.org
 func (provider *OpenWeather) WeatherRequest(country string, city string) WeatherResponse {
-
-	configuration := Configuration{}
-	err := gonfig.GetConf("configuration.json", &configuration)
-	if err != nil {
-		panic(err)
-	}
-
-	resp, err := http.Get("http://api.openweathermap.org/data/2.5/weather?q=" + city + "," + country + "&units=imperial&appid=" + configuration.OpenWeatherAPIKey)
+	resp, err := http.Get(provider.Configuration.BaseURL + "/weather?q=" + city + "," +
+		country + "&units=imperial&appid=" + provider.Configuration.APIKey)
 	if err != nil {
 		log.Fatalln(err)
 	}

@@ -5,6 +5,8 @@ import (
 	"os"
 
 	"github.com/bencami22/WeatherComparer/weathercomparer"
+
+	"github.com/tkanos/gonfig"
 )
 
 func main() {
@@ -15,10 +17,18 @@ func main() {
 }
 
 func run() error {
+
+	configuration := weathercomparer.Configuration{}
+	err := gonfig.GetConf("configuration.json", &configuration)
+	if err != nil {
+		panic(err)
+	}
+
 	var providers = []weathercomparer.ProviderRequestor{
-		&weathercomparer.WeatherBit{},
-		&weathercomparer.OpenWeather{},
-		&weathercomparer.AccuWeather{}}
+		&weathercomparer.WeatherBit{Configuration: configuration.WeatherBitConfiguration},
+		&weathercomparer.OpenWeather{Configuration: configuration.OpenWeatherConfiguration},
+		&weathercomparer.AccuWeather{Configuration: configuration.AccuWeatherConfiguration},
+	}
 	for _, v := range providers {
 		tempChannel := make(chan weathercomparer.WeatherResponse)
 		go func() {
