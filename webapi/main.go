@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/bencami22/WeatherComparer/weathercomparer"
 	//"weathercomparer"
+	"github.com/bencami22/WeatherComparer/weathercomparer"
 
 	"github.com/tkanos/gonfig"
 )

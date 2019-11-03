@@ -29,14 +29,9 @@ func (provider *AccuWeather) WeatherRequest(country string, city string) (Weathe
 		log.Fatalln(err)
 		return WeatherResponse{}, err
 	}
-	//log.Println(string(body))
 
 	var result []interface{}
 	json.Unmarshal([]byte(body), &result)
-	if err == nil {
-		log.Fatalln(err)
-		return WeatherResponse{}, err
-	}
 	locationObj := result[0].(map[string]interface{})
 	locationKey := locationObj["Key"].(string)
 
@@ -53,8 +48,6 @@ func (provider *AccuWeather) WeatherRequest(country string, city string) (Weathe
 		log.Fatalln(err)
 		return WeatherResponse{}, err
 	}
-
-	log.Println(string(body))
 
 	json.Unmarshal([]byte(body), &result)
 	tempObj := result[0].(map[string]interface{})
