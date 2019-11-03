@@ -13,17 +13,20 @@ type OpenWeather struct {
 }
 
 //WeatherRequest retrieves weather data from openweathermap.org
-func (provider *OpenWeather) WeatherRequest(country string, city string) WeatherResponse {
+func (provider *OpenWeather) WeatherRequest(country string, city string) (WeatherResponse, error) {
+
 	resp, err := http.Get(provider.Configuration.BaseURL + "/weather?q=" + city + "," +
 		country + "&units=imperial&appid=" + provider.Configuration.APIKey)
 	if err != nil {
 		log.Fatalln(err)
+		return WeatherResponse{}, err
 	}
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalln(err)
+		return WeatherResponse{}, err
 	}
 	//log.Println(string(body))
 
@@ -32,5 +35,6 @@ func (provider *OpenWeather) WeatherRequest(country string, city string) Weather
 	var tempObj = result["main"].(map[string]interface{})
 	var tempinfahrenheight = tempObj["temp"].(float64)
 	var temp = Temperature(tempinfahrenheight)
-	return WeatherResponse{temp.toCelsius()}
+
+	return WeatherResponse{DegreeCelsius: temp.toCelsius()}, nil
 }

@@ -13,18 +13,21 @@ type WeatherBit struct {
 }
 
 //WeatherRequest retrieves weather data from weatherbit.io
-func (provider *WeatherBit) WeatherRequest(country string, city string) WeatherResponse {
-	resp, err := http.Get(provider.Configuration.BaseURL + "current?city=" + city +
+func (provider *WeatherBit) WeatherRequest(country string, city string) (WeatherResponse, error) {
+	resp, err := http.Get(provider.Configuration.BaseURL + "/current?city=" + city +
 		"&country=" + country + "&key=" + provider.Configuration.APIKey)
 
 	if err != nil {
 		log.Fatalln(err)
+		return WeatherResponse{}, err
 	}
+
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalln(err)
+		return WeatherResponse{}, err
 	}
 	//log.Println(string(body))
 
@@ -34,5 +37,5 @@ func (provider *WeatherBit) WeatherRequest(country string, city string) WeatherR
 	var bla = temp[0].(map[string]interface{})
 	var finaltemp = bla["temp"].(float64)
 
-	return WeatherResponse{finaltemp}
+	return WeatherResponse{DegreeCelsius: finaltemp}, nil
 }
