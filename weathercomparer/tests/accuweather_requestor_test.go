@@ -6,7 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"weathercomparer"
+	//"weathercomparer"
+	"github.com/bencami22/WeatherComparer/weathercomparer"
 )
 
 func TestWeatherRequest(t *testing.T) {
