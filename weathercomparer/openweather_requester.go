@@ -2,6 +2,7 @@ package weathercomparer
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -28,6 +29,11 @@ func (provider *OpenWeather) WeatherRequest(country string, city string) (Weathe
 		log.Fatalln(err)
 		return WeatherResponse{}, err
 	}
+
+	if resp.StatusCode > 299 {
+		return WeatherResponse{}, fmt.Errorf("Received %d from remote", resp.StatusCode)
+	}
+
 	//log.Println(string(body))
 
 	var result map[string]interface{}

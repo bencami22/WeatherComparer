@@ -2,6 +2,7 @@ package weathercomparer
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -29,7 +30,10 @@ func (provider *WeatherBit) WeatherRequest(country string, city string) (Weather
 		log.Fatalln(err)
 		return WeatherResponse{}, err
 	}
-	//log.Println(string(body))
+
+	if resp.StatusCode > 299 {
+		return WeatherResponse{}, fmt.Errorf("Received %d from remote", resp.StatusCode)
+	}
 
 	var result map[string]interface{}
 	json.Unmarshal([]byte(body), &result)

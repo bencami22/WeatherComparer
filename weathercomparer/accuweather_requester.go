@@ -2,6 +2,7 @@ package weathercomparer
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -22,12 +23,17 @@ func (provider *AccuWeather) WeatherRequest(country string, city string) (Weathe
 		log.Fatalln(err)
 		return WeatherResponse{}, err
 	}
+
 	defer resp.Body.Close()
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		log.Fatalln(err)
 		return WeatherResponse{}, err
+	}
+
+	if resp.StatusCode > 299 {
+		return WeatherResponse{}, fmt.Errorf("Received %d from remote", resp.StatusCode)
 	}
 
 	var result []interface{}
@@ -47,6 +53,10 @@ func (provider *AccuWeather) WeatherRequest(country string, city string) (Weathe
 	if err != nil {
 		log.Fatalln(err)
 		return WeatherResponse{}, err
+	}
+
+	if resp.StatusCode > 299 {
+		return WeatherResponse{}, fmt.Errorf("Received %d from remote", resp.StatusCode)
 	}
 
 	json.Unmarshal([]byte(body), &result)

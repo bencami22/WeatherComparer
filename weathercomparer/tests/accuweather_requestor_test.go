@@ -10,7 +10,7 @@ import (
 	"github.com/bencami22/WeatherComparer/weathercomparer"
 )
 
-func TestWeatherRequest(t *testing.T) {
+func TestWeatherRequest_AccuWeather_Success(t *testing.T) {
 	testCountry := "IT"
 	testCity := "Rome"
 	testAPIKey := "abc123"
@@ -43,7 +43,7 @@ func TestWeatherRequest(t *testing.T) {
 	_response, err := weathercomparer.ProviderRequestor.WeatherRequest(requestor, testCountry, testCity)
 
 	if err != nil {
-		t.Errorf("Error was returned")
+		t.Errorf("Error was returned. Error is %v", err)
 	}
 
 	if _response.DegreeCelsius < 1 {
