@@ -24,7 +24,7 @@ func main() {
 
 func run() error {
 
-	configuration := weathercomparer.Configuration{}
+	configuration = weathercomparer.Configuration{}
 	err := gonfig.GetConf("configuration.json", &configuration)
 	if err != nil {
 		panic(err)
@@ -66,9 +66,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 		err := <-errChannel
 		fmt.Println(weatherResponse)
 		fmt.Println(err)
-
 	}
-
 	w.Write([]byte(`{"message": "post called"}`))
 }
 
