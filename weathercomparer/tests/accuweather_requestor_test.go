@@ -11,6 +11,7 @@ import (
 )
 
 func TestWeatherRequest_AccuWeather_Success(t *testing.T) {
+	// Arrange
 	testCountry := "IT"
 	testCity := "Rome"
 	testAPIKey := "abc123"
@@ -40,8 +41,11 @@ func TestWeatherRequest_AccuWeather_Success(t *testing.T) {
 	}
 
 	requestor := &weathercomparer.AccuWeather{Configuration: configs}
+
+	// Act
 	_response, err := weathercomparer.ProviderRequestor.WeatherRequest(requestor, testCountry, testCity)
 
+	// Assert
 	if err != nil {
 		t.Errorf("Error was returned. Error is %v", err)
 	}
