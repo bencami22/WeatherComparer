@@ -47,7 +47,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 	providers := map[string]weathercomparer.ProviderRequestor{
 		"WeatherBit":  &weathercomparer.WeatherBit{Configuration: configuration.WeatherBitConfiguration},
 		"OpenWeather": &weathercomparer.OpenWeather{Configuration: configuration.OpenWeatherConfiguration},
-		"AccuWeather": &weathercomsparer.AccuWeather{Configuration: configuration.AccuWeatherConfiguration},
+		"AccuWeather": &weathercomparer.AccuWeather{Configuration: configuration.AccuWeatherConfiguration},
 	}
 
 	results := make(map[string]float64)
