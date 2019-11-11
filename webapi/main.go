@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
@@ -39,38 +40,62 @@ func run() error {
 	return http.ListenAndServe(":8080", r)
 }
 
+//Pair is to store a Provider and its response (degreeCelsius)
+type Pair struct {
+	a, b interface{}
+}
+
 func get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 
-	var providers = []weathercomparer.ProviderRequestor{
-		&weathercomparer.WeatherBit{Configuration: configuration.WeatherBitConfiguration},
-		&weathercomparer.OpenWeather{Configuration: configuration.OpenWeatherConfiguration},
-		&weathercomparer.AccuWeather{Configuration: configuration.AccuWeatherConfiguration},
+	providers := map[string]weathercomparer.ProviderRequestor{
+		"WeatherBit":  &weathercomparer.WeatherBit{Configuration: configuration.WeatherBitConfiguration},
+		"OpenWeather": &weathercomparer.OpenWeather{Configuration: configuration.OpenWeatherConfiguration},
+		"AccuWeather": &weathercomparer.AccuWeather{Configuration: configuration.AccuWeatherConfiguration},
 	}
-	for _, v := range providers {
+
+	results := make(map[string]float64)
+
+	for k, v := range providers {
+
 		tempChannel := make(chan weathercomparer.WeatherResponse, 1)
 		errChannel := make(chan error, 1)
+
 		go func() {
 			defer close(tempChannel)
 			defer close(errChannel)
+
 			weatherResponse, err := weathercomparer.ProviderRequestor.WeatherRequest(v, "IT", "ROME")
 			if err == nil {
 				tempChannel <- weatherResponse
 				return
 			}
+
 			print(err)
 			errChannel <- err
 		}()
+
 		weatherResponse := <-tempChannel
 		err := <-errChannel
-		fmt.Println(weatherResponse)
+
+		if err == nil {
+			fmt.Println(weatherResponse)
+			results[k] = weatherResponse.DegreeCelsius
+		} else {
+			fmt.Println(err)
+		}
+	}
+
+	json, err := json.Marshal(results)
+	if err != nil {
 		fmt.Println(err)
 	}
-	n, err := w.Write([]byte(`{"message": "post called"}`))
+
+	n, err := w.Write(json)
 	if err != nil {
 		fmt.Println(n, err)
-	}  
+	}
 }
 
 func specificProvider(w http.ResponseWriter, r *http.Request) {
@@ -79,6 +104,7 @@ func specificProvider(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 
 		var providerRequestor weathercomparer.ProviderRequestor
+
 		print(val)
 		switch val {
 		case "openweather":
@@ -105,7 +131,7 @@ func specificProvider(w http.ResponseWriter, r *http.Request) {
 			n, err := w.Write([]byte(fmt.Sprintf(`{"degreeCelsius": "%v"}`, weatherResponse.DegreeCelsius)))
 			if err != nil {
 				fmt.Println(n, err)
-			}  
+			}
 
 		}
 	}
