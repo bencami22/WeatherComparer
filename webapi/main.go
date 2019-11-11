@@ -40,11 +40,6 @@ func run() error {
 	return http.ListenAndServe(":8080", r)
 }
 
-//Pair is to store a Provider and its response (degreeCelsius)
-type Pair struct {
-	a, b interface{}
-}
-
 func get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -52,7 +47,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 	providers := map[string]weathercomparer.ProviderRequestor{
 		"WeatherBit":  &weathercomparer.WeatherBit{Configuration: configuration.WeatherBitConfiguration},
 		"OpenWeather": &weathercomparer.OpenWeather{Configuration: configuration.OpenWeatherConfiguration},
-		"AccuWeather": &weathercomparer.AccuWeather{Configuration: configuration.AccuWeatherConfiguration},
+		"AccuWeather": &weathercomsparer.AccuWeather{Configuration: configuration.AccuWeatherConfiguration},
 	}
 
 	results := make(map[string]float64)
