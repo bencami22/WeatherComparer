@@ -37,7 +37,10 @@ func (provider *AccuWeather) WeatherRequest(country string, city string) (Weathe
 	}
 
 	var result []interface{}
-	json.Unmarshal([]byte(body), &result)
+	err = json.Unmarshal([]byte(body), &result)
+	if err != nil{
+		return WeatherResponse{}, err
+	}
 	locationObj := result[0].(map[string]interface{})
 	locationKey := locationObj["Key"].(string)
 
@@ -59,7 +62,11 @@ func (provider *AccuWeather) WeatherRequest(country string, city string) (Weathe
 		return WeatherResponse{}, fmt.Errorf("Received %d from remote", resp.StatusCode)
 	}
 
-	json.Unmarshal([]byte(body), &result)
+	err = json.Unmarshal([]byte(body), &result)
+	if err != nil{
+		return WeatherResponse{}, err
+	}
+
 	tempObj := result[0].(map[string]interface{})
 	t := tempObj["Temperature"].(map[string]interface{})
 	metricTemperature := t["Metric"].(map[string]interface{})

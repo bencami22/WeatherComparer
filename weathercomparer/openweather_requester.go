@@ -37,7 +37,10 @@ func (provider *OpenWeather) WeatherRequest(country string, city string) (Weathe
 	//log.Println(string(body))
 
 	var result map[string]interface{}
-	json.Unmarshal([]byte(body), &result)
+	err = json.Unmarshal([]byte(body), &result)
+	if err != nil{
+		return WeatherResponse{}, err
+	}
 	var tempObj = result["main"].(map[string]interface{})
 	var tempinfahrenheight = tempObj["temp"].(float64)
 	var temp = Temperature(tempinfahrenheight)

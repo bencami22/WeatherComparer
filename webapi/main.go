@@ -75,7 +75,7 @@ func specificProvider(w http.ResponseWriter, r *http.Request) {
 	if val, ok := pathParams["provider"]; ok {
 		w.Header().Set("Content-Type", "application/json")
 
-		var providerRequestor weathercomparer.ProviderRequestor = nil
+		var providerRequestor weathercomparer.ProviderRequestor
 		print(val)
 		switch val {
 		case "openweather":
