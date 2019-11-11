@@ -34,7 +34,7 @@ func TestWeatherRequest_AccuWeather_Success(t *testing.T) {
 			res.Header().Set("Content-Type", "application/json")
 			n, err := io.WriteString(res, "[{\"LocalObservationDateTime\":\"2019-11-03T17:12:00+01:00\",\"EpochTime\":1572797520,\"WeatherText\":\"Thundershower\",\"WeatherIcon\":42,\"HasPrecipitation\":true,\"PrecipitationType\":\"Rain\",\"IsDayTime\":false,\"Temperature\":{\"Metric\":{\"Value\":21.1,\"Unit\":\"C\",\"UnitType\":17},\"Imperial\":{\"Value\":70.0,\"Unit\":\"F\",\"UnitType\":18}},\"MobileLink\":\"http://m.accuweather.com/en/it/rome/213490/current-weather/213490?lang=en-us\",\"Link\":\"http://www.accuweather.com/en/it/rome/213490/current-weather/213490?lang=en-us\"}]")
 			if err != nil {
-				t.Logf(n)
+				t.Log(n, err)
 			}
 		})
 
