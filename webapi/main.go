@@ -67,7 +67,10 @@ func get(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(weatherResponse)
 		fmt.Println(err)
 	}
-	w.Write([]byte(`{"message": "post called"}`))
+	n, err := w.Write([]byte(`{"message": "post called"}`))
+	if err != nil {
+		fmt.Println(n, err)
+	}  
 }
 
 func specificProvider(w http.ResponseWriter, r *http.Request) {
@@ -99,7 +102,10 @@ func specificProvider(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			w.Write([]byte(fmt.Sprintf(`{"degreeCelsius": "%v"}`, weatherResponse.DegreeCelsius)))
+			n, err := w.Write([]byte(fmt.Sprintf(`{"degreeCelsius": "%v"}`, weatherResponse.DegreeCelsius)))
+			if err != nil {
+				fmt.Println(n, err)
+			}  
 
 		}
 	}

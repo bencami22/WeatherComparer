@@ -36,7 +36,10 @@ func (provider *WeatherBit) WeatherRequest(country string, city string) (Weather
 	}
 
 	var result map[string]interface{}
-	json.Unmarshal([]byte(body), &result)
+	err = json.Unmarshal([]byte(body), &result)
+	if err != nil{
+		return WeatherResponse{}, err
+	}
 	var temp = result["data"].([]interface{})
 	var bla = temp[0].(map[string]interface{})
 	var finaltemp = bla["temp"].(float64)
