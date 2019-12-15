@@ -55,7 +55,7 @@ func TestWeatherRequest_AccuWeather_Success(t *testing.T) {
 	requestor := &weathercomparer.AccuWeather{Configuration: configs}
 
 	// Act
-	_response, err := weathercomparer.ProviderRequestor.WeatherRequest(ctx, requestor, testCountry, testCity)
+	_response, err := weathercomparer.ProviderRequestor.WeatherRequest(requestor, ctx, testCountry, testCity)
 
 	// Assert
 	if err != nil {

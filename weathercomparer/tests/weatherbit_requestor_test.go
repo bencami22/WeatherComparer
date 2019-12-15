@@ -41,7 +41,7 @@ func TestWeatherRequest_WeatherBit_Success200(t *testing.T) {
 	defer cancel()
 
 	// Act
-	_response, err := weathercomparer.ProviderRequestor.WeatherRequest(ctx, requestor, testCountry, testCity)
+	_response, err := weathercomparer.ProviderRequestor.WeatherRequest(requestor, ctx, testCountry, testCity)
 
 	// Assert
 	if err != nil {
@@ -72,8 +72,12 @@ func TestWeatherRequest_WeatherBit_Failure404(t *testing.T) {
 
 	requestor := &weathercomparer.WeatherBit{Configuration: configs}
 
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(3)*time.Second)
+	defer cancel()
+
 	// Act
-	_response, err := weathercomparer.ProviderRequestor.WeatherRequest(requestor, testCountry, testCity)
+	_response, err := weathercomparer.ProviderRequestor.WeatherRequest(requestor, ctx, testCountry, testCity)
 
 	// Assert
 	if err == nil {
