@@ -1,6 +1,7 @@
 package weathercomparer
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -14,7 +15,7 @@ type AccuWeather struct {
 }
 
 //WeatherRequest retrieves weather data from accuweather.com
-func (provider *AccuWeather) WeatherRequest(country string, city string) (WeatherResponse, error) {
+func (provider *AccuWeather) WeatherRequest(ctx context.Context, country string, city string) (WeatherResponse, error) {
 
 	//first we must get accuweathers 'LocationKey'
 	resp, err := http.Get(provider.Configuration.BaseURL + "/locations/v1/cities/" +
@@ -38,7 +39,7 @@ func (provider *AccuWeather) WeatherRequest(country string, city string) (Weathe
 
 	var result []interface{}
 	err = json.Unmarshal([]byte(body), &result)
-	if err != nil{
+	if err != nil {
 		return WeatherResponse{}, err
 	}
 	locationObj := result[0].(map[string]interface{})
@@ -63,7 +64,7 @@ func (provider *AccuWeather) WeatherRequest(country string, city string) (Weathe
 	}
 
 	err = json.Unmarshal([]byte(body), &result)
-	if err != nil{
+	if err != nil {
 		return WeatherResponse{}, err
 	}
 

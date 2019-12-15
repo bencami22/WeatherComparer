@@ -1,10 +1,12 @@
 package weathercomparer
 
 import (
+	"context"
 	"io"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	//"weathercomparer"
 	"github.com/bencami22/WeatherComparer/weathercomparer"
@@ -46,10 +48,14 @@ func TestWeatherRequest_AccuWeather_Success(t *testing.T) {
 		APIKey:  testAPIKey,
 	}
 
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(3)*time.Second)
+	defer cancel()
+
 	requestor := &weathercomparer.AccuWeather{Configuration: configs}
 
 	// Act
-	_response, err := weathercomparer.ProviderRequestor.WeatherRequest(requestor, testCountry, testCity)
+	_response, err := weathercomparer.ProviderRequestor.WeatherRequest(ctx, requestor, testCountry, testCity)
 
 	// Assert
 	if err != nil {

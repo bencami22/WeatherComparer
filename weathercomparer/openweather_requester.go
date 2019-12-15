@@ -1,6 +1,7 @@
 package weathercomparer
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -14,7 +15,7 @@ type OpenWeather struct {
 }
 
 //WeatherRequest retrieves weather data from openweathermap.org
-func (provider *OpenWeather) WeatherRequest(country string, city string) (WeatherResponse, error) {
+func (provider *OpenWeather) WeatherRequest(ctx context.Context, country string, city string) (WeatherResponse, error) {
 
 	resp, err := http.Get(provider.Configuration.BaseURL + "/weather?q=" + city + "," +
 		country + "&units=imperial&appid=" + provider.Configuration.APIKey)
@@ -38,7 +39,7 @@ func (provider *OpenWeather) WeatherRequest(country string, city string) (Weathe
 
 	var result map[string]interface{}
 	err = json.Unmarshal([]byte(body), &result)
-	if err != nil{
+	if err != nil {
 		return WeatherResponse{}, err
 	}
 	var tempObj = result["main"].(map[string]interface{})

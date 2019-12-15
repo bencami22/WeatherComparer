@@ -1,6 +1,7 @@
 package weathercomparer
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -14,7 +15,7 @@ type WeatherBit struct {
 }
 
 //WeatherRequest retrieves weather data from weatherbit.io
-func (provider *WeatherBit) WeatherRequest(country string, city string) (WeatherResponse, error) {
+func (provider *WeatherBit) WeatherRequest(ctx context.Context, country string, city string) (WeatherResponse, error) {
 	resp, err := http.Get(provider.Configuration.BaseURL + "/current?city=" + city +
 		"&country=" + country + "&key=" + provider.Configuration.APIKey)
 
@@ -37,7 +38,7 @@ func (provider *WeatherBit) WeatherRequest(country string, city string) (Weather
 
 	var result map[string]interface{}
 	err = json.Unmarshal([]byte(body), &result)
-	if err != nil{
+	if err != nil {
 		return WeatherResponse{}, err
 	}
 	var temp = result["data"].([]interface{})
