@@ -11,7 +11,6 @@ import (
 
 	"github.com/bencami22/WeatherComparer/weathercomparer"
 
-	//"fraugster.com/interview-challenge/go/src/weathercomparer"
 	"github.com/tkanos/gonfig"
 
 	"github.com/gorilla/mux"
