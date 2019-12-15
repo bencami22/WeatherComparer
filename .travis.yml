@@ -3,4 +3,5 @@ language: go
 go:
 - master
 
-go_import_path: 
+before_install:
+    - go get -u github.com/bencami22/WeatherComparer
