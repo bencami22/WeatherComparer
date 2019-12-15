@@ -137,6 +137,10 @@ func specificProvider(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if providerRequestor != nil {
+			ctx := context.Background()
+			ctx, cancel := context.WithTimeout(ctx, time.Duration(timeoutSeconds)*time.Second)
+			defer cancel()
+
 			weatherResponse, err := weathercomparer.ProviderRequestor.WeatherRequest(providerRequestor, ctx, "IT", "ROME")
 			if err != nil {
 				print(err)
