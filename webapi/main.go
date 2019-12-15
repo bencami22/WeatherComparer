@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"os"
+	"sync"
+	"time"
 
 	//"weathercomparer"
 	"github.com/bencami22/WeatherComparer/weathercomparer"
@@ -12,6 +15,11 @@ import (
 	"github.com/tkanos/gonfig"
 
 	"github.com/gorilla/mux"
+)
+
+const (
+	amountOfConcurrentWorkers = 2
+	timeoutSeconds            = 3
 )
 
 var configuration weathercomparer.Configuration
@@ -40,6 +48,12 @@ func run() error {
 	return http.ListenAndServe(":8080", r)
 }
 
+//WeatherResponseWrapper used to return both api response and error from goroutine.
+type WeatherResponseWrapper struct {
+	WeatherResponse weathercomparer.WeatherResponse
+	Error           error
+}
+
 func get(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
@@ -50,36 +64,36 @@ func get(w http.ResponseWriter, r *http.Request) {
 		"AccuWeather": &weathercomparer.AccuWeather{Configuration: configuration.AccuWeatherConfiguration},
 	}
 
+	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(ctx, time.Duration(timeoutSeconds)*time.Second)
+	defer cancel()
+
 	results := make(map[string]float64)
 
-	for k, v := range providers {
+	jobs := make(chan weathercomparer.ProviderRequestor, len(providers))
+	jobResults := make(chan WeatherResponseWrapper, len(providers))
+	var wg sync.WaitGroup
 
-		tempChannel := make(chan weathercomparer.WeatherResponse, 1)
-		errChannel := make(chan error, 1)
+	for i := 0; i < amountOfConcurrentWorkers; i++ {
+		go worker(ctx, i, jobs, jobResults, &wg)
+	}
 
-		go func() {
-			defer close(tempChannel)
-			defer close(errChannel)
+	for _, v := range providers {
+		wg.Add(1)
+		jobs <- v
+	}
 
-			weatherResponse, err := weathercomparer.ProviderRequestor.WeatherRequest(v, "IT", "ROME")
-			if err == nil {
-				tempChannel <- weatherResponse
-				return
-			}
+	wg.Wait()
 
-			print(err)
-			errChannel <- err
-		}()
+	close(jobs)
 
-		weatherResponse := <-tempChannel
-		err := <-errChannel
-
-		if err == nil {
-			fmt.Println(weatherResponse)
-			results[k] = weatherResponse.DegreeCelsius
-		} else {
-			fmt.Println(err)
+	for i := 1; i < len(providers); i++ {
+		result := <-jobResults
+		if result.Error != nil {
+			fmt.Println("Error")
+			continue
 		}
+		results["dsss"] = result.WeatherResponse.DegreeCelsius
 	}
 
 	json, err := json.Marshal(results)
@@ -90,6 +104,14 @@ func get(w http.ResponseWriter, r *http.Request) {
 	n, err := w.Write(json)
 	if err != nil {
 		fmt.Println(n, err)
+	}
+}
+
+func worker(ctx context.Context, id int, providers <-chan weathercomparer.ProviderRequestor, results chan<- WeatherResponseWrapper, wg *sync.WaitGroup) {
+	for p := range providers {
+		weatherResponse, err := weathercomparer.ProviderRequestor.WeatherRequest(ctx, p, "IT", "ROME")
+		results <- WeatherResponseWrapper{WeatherResponse: weatherResponse, Error: err}
+		wg.Done()
 	}
 }
 
