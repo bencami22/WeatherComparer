@@ -92,7 +92,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 			fmt.Println("Error")
 			continue
 		}
-		results["dsss"] = result.WeatherResponse.DegreeCelsius
+		results[result.WeatherResponse.Provider] = result.WeatherResponse.DegreeCelsius
 	}
 
 	json, err := json.Marshal(results)
