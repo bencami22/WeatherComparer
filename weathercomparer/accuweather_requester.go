@@ -73,5 +73,5 @@ func (provider *AccuWeather) WeatherRequest(ctx context.Context, country string,
 	metricTemperature := t["Metric"].(map[string]interface{})
 	temperature := metricTemperature["Value"].(float64)
 
-	return WeatherResponse{DegreeCelsius: temperature}, nil
+	return WeatherResponse{Provider: "Accuweather", DegreeCelsius: temperature}, nil
 }

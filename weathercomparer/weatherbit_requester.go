@@ -45,5 +45,5 @@ func (provider *WeatherBit) WeatherRequest(ctx context.Context, country string, 
 	var bla = temp[0].(map[string]interface{})
 	var finaltemp = bla["temp"].(float64)
 
-	return WeatherResponse{DegreeCelsius: finaltemp}, nil
+	return WeatherResponse{Provider: "WeatherBit", DegreeCelsius: finaltemp}, nil
 }

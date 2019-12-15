@@ -46,5 +46,5 @@ func (provider *OpenWeather) WeatherRequest(ctx context.Context, country string,
 	var tempinfahrenheight = tempObj["temp"].(float64)
 	var temp = Temperature(tempinfahrenheight)
 
-	return WeatherResponse{DegreeCelsius: temp.toCelsius()}, nil
+	return WeatherResponse{Provider: "OpenWeather", DegreeCelsius: temp.toCelsius()}, nil
 }
