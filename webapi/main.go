@@ -9,9 +9,9 @@ import (
 	"sync"
 	"time"
 
-	//"weathercomparer"
 	"github.com/bencami22/WeatherComparer/weathercomparer"
 
+	//"fraugster.com/interview-challenge/go/src/weathercomparer"
 	"github.com/tkanos/gonfig"
 
 	"github.com/gorilla/mux"
@@ -109,7 +109,7 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 func worker(ctx context.Context, id int, providers <-chan weathercomparer.ProviderRequestor, results chan<- WeatherResponseWrapper, wg *sync.WaitGroup) {
 	for p := range providers {
-		weatherResponse, err := weathercomparer.ProviderRequestor.WeatherRequest(ctx, p, "IT", "ROME")
+		weatherResponse, err := weathercomparer.ProviderRequestor.WeatherRequest(p, ctx, "IT", "ROME")
 		results <- WeatherResponseWrapper{WeatherResponse: weatherResponse, Error: err}
 		wg.Done()
 	}
@@ -138,7 +138,7 @@ func specificProvider(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		if providerRequestor != nil {
-			weatherResponse, err := weathercomparer.ProviderRequestor.WeatherRequest(providerRequestor, "IT", "ROME")
+			weatherResponse, err := weathercomparer.ProviderRequestor.WeatherRequest(providerRequestor, ctx, "IT", "ROME")
 			if err != nil {
 				print(err)
 				w.WriteHeader(http.StatusInternalServerError)
