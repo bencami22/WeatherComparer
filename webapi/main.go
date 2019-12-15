@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"sync"
@@ -18,7 +19,7 @@ import (
 
 const (
 	amountOfConcurrentWorkers = 2
-	timeoutSeconds            = 3
+	timeoutSeconds            = 10
 )
 
 var configuration weathercomparer.Configuration
@@ -86,10 +87,10 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 	close(jobs)
 
-	for i := 1; i < len(providers); i++ {
+	for i := 0; i < len(providers); i++ {
 		result := <-jobResults
 		if result.Error != nil {
-			fmt.Println("Error")
+			log.Println("Error", result.Error)
 			continue
 		}
 		results[result.WeatherResponse.Provider] = result.WeatherResponse.DegreeCelsius
@@ -97,12 +98,12 @@ func get(w http.ResponseWriter, r *http.Request) {
 
 	json, err := json.Marshal(results)
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 	}
 
 	n, err := w.Write(json)
 	if err != nil {
-		fmt.Println(n, err)
+		log.Println(n, err)
 	}
 }
 
@@ -121,16 +122,12 @@ func specificProvider(w http.ResponseWriter, r *http.Request) {
 
 		var providerRequestor weathercomparer.ProviderRequestor
 
-		print(val)
 		switch val {
 		case "openweather":
-			w.WriteHeader(http.StatusOK)
 			providerRequestor = &weathercomparer.OpenWeather{Configuration: configuration.OpenWeatherConfiguration}
 		case "accuweather":
-			w.WriteHeader(http.StatusOK)
 			providerRequestor = &weathercomparer.AccuWeather{Configuration: configuration.AccuWeatherConfiguration}
 		case "weatherbit":
-			w.WriteHeader(http.StatusOK)
 			providerRequestor = &weathercomparer.WeatherBit{Configuration: configuration.WeatherBitConfiguration}
 		default:
 			w.WriteHeader(http.StatusNotImplemented)
@@ -143,14 +140,15 @@ func specificProvider(w http.ResponseWriter, r *http.Request) {
 
 			weatherResponse, err := weathercomparer.ProviderRequestor.WeatherRequest(providerRequestor, ctx, "IT", "ROME")
 			if err != nil {
-				print(err)
+				log.Println(err)
 				w.WriteHeader(http.StatusInternalServerError)
 				return
 			}
 
+			w.WriteHeader(http.StatusOK)
 			n, err := w.Write([]byte(fmt.Sprintf(`{"degreeCelsius": "%v"}`, weatherResponse.DegreeCelsius)))
 			if err != nil {
-				fmt.Println(n, err)
+				log.Println(n, err)
 			}
 
 		}
